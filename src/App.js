@@ -3,7 +3,7 @@ import './App.css';
 
 const App = () => {
     const [user, setUser] = useState(null)
-    const [userId, setUserId] = useState(1);
+    const [userId, setUserId] = useState('');
 
     const getUser = async (id) => {
         const user = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`).then(response => response.json())
@@ -12,11 +12,13 @@ const App = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (!userId) return alert('Enter an id!');
         getUser(userId);
     }
 
     const handleChange = (e) => {
         const id = parseInt(e.target.value);
+        if (isNaN(id)) setUserId('');
         if (id < 11 && id > 0) setUserId(id);
     }
 

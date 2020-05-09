@@ -85,4 +85,4 @@ await waitFor(() => {
 However, currently this doesn't play nice with Create React app, and you must be on the very latest version of several packages. So for now, whatever. But know that you may see the newer pattern soon in the future.
 
 ## fireEvent vs @testing-library/user-event
-In this great article which I will keep linking too becuase you really should read it( https://kentcdodds.com/blog/common-mistakes-with-react-testing-library) Kent talks about a new way to mock user events much closer to how they appear in real life. However, it's still new, so for now I'm just using fireEvent so you see it. To find the section, search `Not using @testing-library/user-event` on the article.
+In this great article which I will keep linking too becuase you really should read it( https://kentcdodds.com/blog/common-mistakes-with-react-testing-library) Kent talks about a new way to mock user events much closer to how they appear in real life. However, it's still new, so for now I'm using both fireEvent and userEvent so you see them each. To find the section, search `Not using @testing-library/user-event` on the article.

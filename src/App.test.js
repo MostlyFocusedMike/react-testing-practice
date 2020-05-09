@@ -1,6 +1,7 @@
 import React from 'react';
 import { enableFetchMocks } from 'jest-fetch-mock'
 import { render, screen, fireEvent, waitForElement } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import App from './App';
 import { mockUser1, mockUser2 } from './mockData';
 
@@ -9,9 +10,9 @@ enableFetchMocks(); // mocks the fetch method for the test
 describe('Basic Tests', () => {
     beforeAll(() => {
         // Five months ago jest-fetch-mock 3.0.0 FINALLY added the ability to mock by route,
-        // not request order. I highly recommend always mocking by route, since tests will
-        // only succeed if the actual fetched url is correct. Fetches that are mocked by order
-        // ignore the fetch destination so some bugs can sneak through
+        // not request order. I *highly* recommend mocking by route, since tests will
+        // only succeed if the actual fetched url is correct. Fetches that are mocked
+        // by order ignore the fetch destination so some bugs can sneak through.
 
         // use regex to grab routes dynamically
         const userRoutesUrl = /^https:\/\/jsonplaceholder.typicode.com\/users\/[\d]$/;
@@ -28,6 +29,10 @@ describe('Basic Tests', () => {
         fetch.mockIf(userRoutesUrl, mockUsersRoutes);
     });
 
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
     const setup = async () => {
         const { container } = render(<App />);
 
@@ -41,7 +46,9 @@ describe('Basic Tests', () => {
         };
     };
 
-    // afterEach(cleanup); // this step is no longer needed
+    // afterEach(() => {
+    //     cleanup() // this step is no longer needed
+    // });
 
     it('renders at all', async () => {
         await setup();
@@ -74,8 +81,18 @@ describe('Basic Tests', () => {
         expect(initialName).not.toBeInTheDocument();
     });
 
+    it('Throws an alert when trying to use an empty id', async () => {
+        const { submitButton } = await setup();
+        // how to mock globals
+        global.alert = jest.fn();
+
+        fireEvent.click(submitButton);
+        expect(global.alert).toHaveBeenCalledTimes(1);
+        expect(global.alert).toHaveBeenCalledWith('Enter an id!');
+    });
+
     describe('Controlled input does not allow values except integers 1-10', () => {
-        const initialValue = '1';
+        const initialValue = '';
         const tooLowNum = '0';
         const minNum = '1';
         const maxNum = '10';
@@ -95,8 +112,8 @@ describe('Basic Tests', () => {
 
         it('accepts 10 as the maximum', async () => {
             const { idInput } = await setup();
-
-            fireEvent.change(idInput, { target: { value: maxNum }});
+            // this is the userEvent way to do it
+            await userEvent.type(idInput, maxNum);
             expect(idInput.value).toBe(maxNum);
         });
 
