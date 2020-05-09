@@ -2,27 +2,11 @@ import React from 'react';
 import { enableFetchMocks } from 'jest-fetch-mock'
 import { render, waitForElement, screen, fireEvent } from '@testing-library/react';
 import App from './App';
+import { mockUser1, mockUser2 } from './mockData';
+
 enableFetchMocks();
 
-const mockUser1 = {
-    email: "Sincere@april.biz",
-    id: 1,
-    name: "Leanne Graham",
-    phone: "1-770-736-8031",
-    username: "Bret",
-    website: "hildegard.org",
-}
-
-const mockUser2 = {
-    email: "Shanna@melissa.tv",
-    id: 2,
-    name: "Ervin Howell",
-    phone: "010-692-6593 x09125",
-    username: "Antonette",
-    website: "anastasia.net",
-}
-
-describe('Basic Test', () => {
+describe('Basic Tests', () => {
     beforeAll(() => {
         // Five months ago jest-fetch-mock 3.0.0 FINALLY added the ability to mock by route,
         // not request order. I highly recommend always mocking by route, since those tests

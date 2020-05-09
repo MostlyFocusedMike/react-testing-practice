@@ -1,4 +1,7 @@
-## Latest Patterns
+## A word on snapshots
+Snapshots are a neat way to check a big chunk of the DOM all at once. However, they are *notorious* for being ignored by devs, since they will often fail for "trivial" reasons. A perfect example is changing some styling or layout that doesn't actually matter. Since you can update snapshots simply by pressing the "u" key, and the files are generated automatically when you call the `toBe
+
+## waitForElement vs waitFor
 heads up, wait for element pattern will soon be replaced:
 
 ```js
