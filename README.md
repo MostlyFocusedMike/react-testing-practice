@@ -1,8 +1,8 @@
 # Testing Examples
-This repo has an extremely simple app that just gets users from a dummy site in order to run some tests. It shows how to mock fetches by route, how to fire events, and some basic patterns that you'll find helpful. Below are some highlights that may help you in your coding journey.
+This repo has an extremely simple app that just gets users from a dummy site in order to run some tests. It shows how to mock fetches by route with [jest fetch mock](https://www.npmjs.com/package/jest-fetch-mock), how to fire events, and some basic patterns that you'll find helpful. Below are some highlights that may help you in your coding journey.
 
 # What is this "screen" nonsense?
-While we used to use `render()` and then destructure the needed values, sometimes we would have to rerender to update the dom. No more. Per [Kent C. Dodds himself](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library):
+While we used to use `render()` and then destructure the necessary values, sometimes we would have to rerender to update the dom. No more. Per [Kent C. Dodds himself](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library):
 
 > The benefit of using screen is you no longer need to keep the render call destructure up-to-date as you add/remove the queries you need. You only need to type screen. and let your editor's magic autocomplete take care of the rest.
 
@@ -41,12 +41,12 @@ The one thing you may still need from the `render` function is the `container`, 
 Snapshots are a neat way to check a big chunk of the DOM all at once. The files are generated automatically when you call the `.toMatchSnapshot()` the first time. However, they are *notorious* for being ignored by devs, since they will often fail for "trivial" reasons. A perfect example is changing some styling or layout that doesn't actually matter. Since you can update snapshots simply by pressing the "u" key, a lot of times devs will just update them without really thinking. Personally, I never trust them all that much since sometimes they are updated when they shouldn't and then get committed. But it's good to know how to use them.
 
 # getBy vs findBy vs queryBy
-Wow, lots of choices [the Cheat Sheet has more info](https://testing-library.com/docs/react-testing-library/cheatsheet) but on the whole it breaks down to:
+Lots of choices, but which is the right one? [The Cheat Sheet has more info](https://testing-library.com/docs/react-testing-library/cheatsheet) but on the whole it breaks down to:
 
 ## getBy*
 This throws an error if no matches are found or more than one match is found. Use this when you are testing for an element you expect to be there right now.
 
-## queryBy
+## queryBy*
 This only returns `null` if no element is found (though it will still throw if multiple matches are found), so use this to confirm an element does not exist. This is really the *only* time you should use it
 ```js
 const gone = queryByText(/Bye/)
@@ -66,8 +66,8 @@ const submitButton = await waitFor(() =>
 const submitButton = await screen.findByRole('button', {name: /submit/i})
 ```
 
-## *all
-These methods all have versions like getByAll* or findByAll which are used when you want to pick up more than one element. Again, check out that cheat sheet for more info.
+## *all*
+These methods all have versions like getAllByDisplayValue or findByText which are used when you want to pick up more than one element. Again, check out that cheat sheet for more info.
 
 ## waitForElement vs waitFor
 Heads up, the `waitForElement` pattern will soon be replaced. Currently this pattern is used when you're waiting for some update (like a setState being called after a fetch) and you don't want to continue if it's not done. You don't really care about the element you're waiting for, you're just using it as a marker for the app state. Like this:
@@ -86,3 +86,6 @@ However, currently this doesn't play nice with Create React app, and you must be
 
 ## fireEvent vs @testing-library/user-event
 In this great article which I will keep linking too becuase you really should read it( https://kentcdodds.com/blog/common-mistakes-with-react-testing-library) Kent talks about a new way to mock user events much closer to how they appear in real life. However, it's still new, so for now I'm using both fireEvent and userEvent so you see them each. To find the section, search `Not using @testing-library/user-event` on the article.
+
+### Oh hey, look at this blog written by someone who is definitely not me
+Here's a little article with some handy tips about [mocking code in tests](https://levelup.gitconnected.com/some-tips-for-mocking-code-in-tests-f46bc9499767?source=friends_link&sk=5c983c764ff0297db3601030a0808aae). 
