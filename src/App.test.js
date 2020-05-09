@@ -1,44 +1,45 @@
 import React from 'react';
 import { enableFetchMocks } from 'jest-fetch-mock'
-import { render, waitForElement, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitForElement } from '@testing-library/react';
 import App from './App';
 import { mockUser1, mockUser2 } from './mockData';
 
-enableFetchMocks();
+enableFetchMocks(); // mocks the fetch method for the test
 
 describe('Basic Tests', () => {
     beforeAll(() => {
         // Five months ago jest-fetch-mock 3.0.0 FINALLY added the ability to mock by route,
-        // not request order. I highly recommend always mocking by route, since those tests
-        // will only succeed if the actual entered url is correct. Request order reliant tests
-        // ignore the fetch destination and just mock by fetch order
+        // not request order. I highly recommend always mocking by route, since tests will
+        // only succeed if the actual fetched url is correct. Fetches that are mocked by order
+        // ignore the fetch destination so some bugs can sneak through
+
+        // use regex to grab routes dynamically
+        const userRoutesUrl = /^https:\/\/jsonplaceholder.typicode.com\/users\/[\d]$/;
+
         const mockUsersRoutes = async (req) => {
-            if (req.url.endsWith("1")) return JSON.stringify(mockUser1);
-            if (req.url.endsWith("2")) return JSON.stringify(mockUser2);
+            if (req.url.endsWith(mockUser1.id)) return JSON.stringify(mockUser1);
+            if (req.url.endsWith(mockUser2.id)) return JSON.stringify(mockUser2);
             return {
                 status: 404,
                 body: "Not Found"
             }
         };
 
-        // use regex to grab routes dynamically
-        const userRoutesUrl = /^https:\/\/jsonplaceholder.typicode.com\/users\/[\d]$/;
-
         fetch.mockIf(userRoutesUrl, mockUsersRoutes);
     });
 
     const setup = async () => {
-        const utils = render(<App />);
+        const { container } = render(<App />);
 
-        await waitForElement(() => utils.getByText(/Leanne Graham/))
+        await waitForElement(() => screen.getByText(mockUser1.name))
         const submitButton = screen.getByText(/Submit/)
         const idInput = screen.getByLabelText(/User Id/)
         return {
-            container: utils.container,
+            container,
             submitButton,
             idInput,
-        }
-    }
+        };
+    };
 
     // afterEach(cleanup); // this step is no longer needed
 
@@ -50,8 +51,7 @@ describe('Basic Tests', () => {
 
     it('Grabs first user', async () => {
         await setup();
-        const username = screen.getByText(/Leanne Graham/);
-        expect(username).toBeInTheDocument();
+        expect(screen.getByText(mockUser1.name)).toBeInTheDocument();
     });
 
     it('Grabs first user but this time uses a snapshot', async () => {
@@ -64,14 +64,17 @@ describe('Basic Tests', () => {
 
         fireEvent.change(idInput, {
             target: { value: 2 },
-        })
+        });
         fireEvent.click(submitButton);
-        await waitForElement(() => screen.getByText(/Ervin Howell/));
-        const oldUsername = screen.queryByText(/Leanne Graham/);
-        expect(oldUsername).not.toBeInTheDocument();
+
+        const newname = await screen.findByText(mockUser2.name);
+        expect(newname).toBeInTheDocument();
+        const initialName = screen.queryByText(mockUser1.name);
+
+        expect(initialName).not.toBeInTheDocument();
     });
 
-    describe('Controlled form does not allow input except integers 1-10', () => {
+    describe('Controlled input does not allow values except integers 1-10', () => {
         const initialValue = '1';
         const tooLowNum = '0';
         const minNum = '1';
@@ -79,7 +82,7 @@ describe('Basic Tests', () => {
         const tooHighNum = '11';
 
         // hmmmmmm, these tests seem awfully similar. Should we combine them or loop?
-        // Not necessarily. While some certainly would, tests should be readable and atomic
+        // Not necessarily. While some devs certainly would, tests should be readable and atomic
         // (that means non reliant on any other tests being run). So looping or combining
         // might not help those two goals. But! Others may disagree, and that's ok, just be
         // consistent with your design choices and you'll be alright
@@ -114,7 +117,7 @@ describe('Basic Tests', () => {
             expect(idInput.value).toBe(initialValue);
             fireEvent.change(idInput, { target: { value: 'a?' }});
             expect(idInput.value).toBe(initialValue);
-            fireEvent.change(idInput, { target: { value: "look it's whatever man, strings fail" }});
+            fireEvent.change(idInput, { target: { value: "look it's whatever, strings fail" }});
             expect(idInput.value).toBe(initialValue);
         });
     });
