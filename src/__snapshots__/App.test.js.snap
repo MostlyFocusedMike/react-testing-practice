@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Basic Test Grabs first user but this time uses a snapshot 1`] = `
+<div
+  class="App"
+>
+  <h1>
+    React Testing Example
+  </h1>
+  <h1>
+    Leanne Graham
+  </h1>
+  <h2>
+    Sincere@april.biz
+  </h2>
+  <p>
+    Bret
+  </p>
+  <form>
+    <label
+      for="user-id"
+    >
+      User Id
+    </label>
+    <input
+      id="user-id"
+      value="1"
+    />
+    <button>
+      Submit
+    </button>
+  </form>
+</div>
+`;

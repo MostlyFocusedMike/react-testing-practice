@@ -7,7 +7,6 @@ const App = () => {
 
     const getUser = async (id) => {
         const user = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`).then(response => response.json())
-        console.log('user:', user)
         setUser(user);
     }
 
@@ -17,8 +16,8 @@ const App = () => {
     }
 
     const handleChange = (e) => {
-        const id = e.target.value
-        if (id < 11) setUserId(id);
+        const id = parseInt(e.target.value);
+        if (id < 11 && id > 0) setUserId(id);
     }
 
     useEffect(() => {
@@ -45,7 +44,7 @@ const App = () => {
             <form onSubmit={handleSubmit} >
                 <label htmlFor='user-id'>User Id</label>
                 <input id='user-id' value={userId} onChange={handleChange}></input>
-                <input type='submit' value='Submit' />
+                <button>Submit</button>
             </form>
         </div>
     );
